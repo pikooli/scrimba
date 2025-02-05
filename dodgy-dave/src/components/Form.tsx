@@ -55,6 +55,7 @@ export const Form = ({
             name="ticker"
             placeholder="MSFT, TSLA, AAPL"
             className="border-2 border-r-0 border-black p-[1em]"
+            onChange={(e) => console.log(e.target.value)}
           />
           <button type="submit" className="border-2 border-black p-[21px]">
             <Image src="/svgs/add.svg" width={14} height={14} alt="add" />
