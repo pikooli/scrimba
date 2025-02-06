@@ -16,6 +16,9 @@ export default {
 			if (request.method === 'OPTIONS') {
 				return new Response(null, { headers: corsHeaders });
 			}
+			if (request.method !== 'POST') {
+				return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: corsHeaders });
+			}
 
 			const contentType = request.headers.get('Content-Type');
 			let data = '';
@@ -31,13 +34,14 @@ export default {
 				messages: JSON.parse(data),
 				temperature: 1.1,
 			});
-			const responseText = response.choices[0].message.content;
-			return new Response(responseText, {
+			const responseText = response.choices[0].message;
+			return new Response(JSON.stringify(responseText), {
 				headers: corsHeaders,
 			});
 		} catch (err) {
 			console.error('error: ', err);
-			return new Response('Unable to access AI. Please refresh and try again' + err, {
+			return new Response(JSON.stringify({error: 'Unable to access AI. Please refresh and try again' + err}), {
+				status: 500,
 				headers: corsHeaders,
 			});
 		}
