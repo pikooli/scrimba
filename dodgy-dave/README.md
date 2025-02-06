@@ -16,7 +16,7 @@ POLYGON_API_KEY=XXXX
 OPENAI_API_KEY=XXXX
 ```
 
-Need to have the url on cloudflare worker or move back to server action to call openai.
-Look at directory ai_app/openai-api-worker
+I disabled cloudflare worker for openai and polygon. To prevent the usage of api key.
+Use server action to call openai and polygon.
 
 ![screenshot](./screenshot.png)

@@ -9,7 +9,7 @@ import { dates } from '@/components/utils/date';
 import { fetchReport } from '@/actions/openAi';
 import { fetchPolygonData } from '@/actions/polygon';
 
-const useServerAction = false;
+const useServerAction = true;
 
 const DEFAULT_MESSAGE = 'Querying Stocks API...';
 const ERROR_MESSAGE = 'There was an error fetching stock data.';

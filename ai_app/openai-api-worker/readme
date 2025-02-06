@@ -1,0 +1,14 @@
+# OpenAI API Worker
+
+This Cloudflare Worker serves as a proxy for OpenAI API requests, handling chat completions for stock market analysis on dodgy-dave.
+
+## Features
+
+- Processes POST requests with chat messages for OpenAI's GPT-3.5-turbo model
+- Implements CORS headers for cross-origin requests
+- Uses environment variables for API key security
+
+## Environment Variables
+
+Required environment variables in cloudflare:
+- `OPENAI_API_KEY`: Your OpenAI API key
