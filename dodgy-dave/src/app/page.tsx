@@ -9,10 +9,14 @@ import { dates } from '@/components/utils/date';
 import { fetchReport } from '@/actions/openAi';
 import { fetchPolygonData } from '@/actions/polygon';
 
+const useServerAction = false;
+
 const DEFAULT_MESSAGE = 'Querying Stocks API...';
 const ERROR_MESSAGE = 'There was an error fetching stock data.';
-const CLOUDFLARE_WORKER_URL =
+const CLOUDFLARE_WORKER_URL_OPENAI =
   'https://openai-api-worker.panamepoul.workers.dev';
+const CLOUDFLARE_WORKER_URL_POLYGON =
+  'https://polygon-api-worker.panamepoul.workers.dev';
 
 const systemPrompt: openai.ChatCompletionMessageParam = {
   role: 'system',
@@ -28,16 +32,15 @@ const examplesTexts = `
     Apple (AAPL) is the supernova in the stock sky – it shot up from $150.22 to a jaw-dropping $175.36 by the close of day three. We’re talking about a stock that’s hotter than a pepper sprout in a chilli cook-off, and it’s showing no signs of cooling down! If you’re sitting on AAPL stock, you might as well be sitting on the throne of Midas. Hold on to it, ride that rocket, and watch the fireworks, because this baby is just getting warmed up! Then there’s Meta (META), the heartthrob with a penchant for drama. It winked at us with an opening of $142.50, but by the end of the thrill ride, it was at $135.90, leaving us a little lovesick. It’s the wild horse of the stock corral, bucking and kicking, ready for a comeback. META is not for the weak-kneed So, sugar, what’s it going to be? For AAPL, my advice is to stay on that gravy train. As for META, keep your spurs on and be ready for the rally.
     ###
     `;
-const useServerAction = false;
 
-const fetchReprtByMode = async (
+const fetchReportByMode = async (
   stockData: string[],
   useServerAction: boolean
 ) => {
   if (useServerAction) {
     return fetchReport(stockData.join(', '));
   }
-  const report = await fetch(CLOUDFLARE_WORKER_URL, {
+  const report = await fetch(CLOUDFLARE_WORKER_URL_OPENAI, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -53,6 +56,26 @@ const fetchReprtByMode = async (
   }
   return report.content;
 };
+// https://polygon-api-worker.panamepoul.workers.dev/?ticker=TSLA&startDate=2025-02-03&endDate=2025-02-05
+const fetchPolygonDataByMode = async (
+  ticker: string,
+  dates: { startDate: string; endDate: string },
+  useServerAction: boolean
+) => {
+  if (useServerAction) {
+    return fetchPolygonData(ticker, dates);
+  }
+  const data = await fetch(
+    `${CLOUDFLARE_WORKER_URL_POLYGON}?ticker=${ticker}&startDate=${dates.startDate}&endDate=${dates.endDate}`,
+    {
+      method: 'GET',
+    }
+  ).then((res) => res.json());
+  if (data.error) {
+    throw new Error(data.error);
+  }
+  return data;
+};
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -65,7 +88,11 @@ export default function Home() {
     try {
       const stockData = await Promise.all(
         tickers.map(async (ticker) => {
-          const data = await fetchPolygonData(ticker, dates);
+          const data = await fetchPolygonDataByMode(
+            ticker,
+            dates,
+            useServerAction
+          );
           if (data) {
             return data;
           } else {
@@ -78,10 +105,11 @@ export default function Home() {
       if (stockData.length === 0) {
         throw new Error('No data found');
       }
-      const report = await fetchReprtByMode(stockData, useServerAction);
+      const report = await fetchReportByMode(stockData, useServerAction);
       setLoading(false);
       setResult(report);
     } catch (err) {
+      setLoading(false);
       setLoadingMessage(ERROR_MESSAGE);
       console.error('error: ', err);
     }
