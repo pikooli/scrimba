@@ -8,6 +8,7 @@ export function Header() {
         alt="logo"
         width={340}
         height={100}
+        priority
       />
     </header>
   );

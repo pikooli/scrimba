@@ -23,6 +23,7 @@ Apple (AAPL) is the supernova in the stock sky – it shot up from $150.22 to a 
 `;
 
 export const fetchReport = async (data: string) => {
+  'use server';
   try {
     const response = await openai.chat.completions.create({
       model,

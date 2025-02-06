@@ -6,6 +6,7 @@ import { Waiting } from '@/components/Waiting';
 import { Result } from '@/components/Result';
 import { dates } from '@/components/utils/date';
 import { fetchReport } from '@/actions/openAi';
+import { fetchPolygonData } from '@/actions/polygon';
 
 const DEFAULT_MESSAGE = 'Querying Stocks API...';
 const ERROR_MESSAGE = 'There was an error fetching stock data.';
@@ -21,18 +22,15 @@ export default function Home() {
     try {
       const stockData = await Promise.all(
         tickers.map(async (ticker) => {
-          const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${dates.startDate}/${dates.endDate}?apiKey=${process.env.NEXT_PUBLIC_POLYGON_API_KEY}`;
-          const response = await fetch(url);
-          const data = await response.text();
-          const status = await response.status;
-          if (status === 200) {
-            setLoadingMessage('Creating report...');
+          const data = await fetchPolygonData(ticker, dates);
+          if (data) {
             return data;
           } else {
             setLoadingMessage(ERROR_MESSAGE);
           }
         })
       );
+      setLoadingMessage('Creating report...');
       const report = await fetchReport(stockData.join(', '));
       setLoading(false);
       setResult(report);

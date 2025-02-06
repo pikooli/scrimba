@@ -9,6 +9,7 @@ const poppins = Poppins({
   weight: ['400', '500', '600', '700'],
   display: 'swap',
 });
+
 const comicNeue = Comic_Neue({
   subsets: ['latin'],
   weight: ['400', '700'],
