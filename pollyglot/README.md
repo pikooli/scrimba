@@ -1,6 +1,6 @@
 # PollyGlot - Perfect Translations Every Time
 
-PollyGlot is a Next.js web application that provides instant translations between English and multiple languages including French, Spanish, and Japanese.
+[PollyGlot](https://scrimba.com/the-ai-engineer-path-c02v/~0o) is a Next.js web application that provides instant translations between English and multiple languages including French, Spanish, and Japanese.
 Powered by OpenAI's GPT-3.5 model, it delivers high-quality translations with a simple and intuitive interface.
 
 ## Features
