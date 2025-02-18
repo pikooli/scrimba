@@ -9,7 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@huggingface/hub": "^1.0.1",
     "@huggingface/inference": "^3.3.0",
+    "@huggingface/transformers": "^3.3.3",
     "next": "15.1.6",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "react": "^19.0.0",
