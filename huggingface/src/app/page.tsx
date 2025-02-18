@@ -1,12 +1,13 @@
 'use client';
 
 import Image from 'next/image';
-import { TextToSpeech } from './TextToSpeech';
+import { ImageToImage } from '@/components/ImageToImage';
+
 export default function Home() {
   return (
     <div>
       <Image src="/huggingFace.svg" alt="Hugging Face" width={95} height={88} />
-      <TextToSpeech />
+      <ImageToImage />
     </div>
   );
 }
