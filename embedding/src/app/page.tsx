@@ -1,10 +1,12 @@
 'use client';
 import { createEmbedding } from '../actions/openAi';
+import { insertDocument } from '../actions/supabase';
 
 export default function Home() {
   const handleClick = async () => {
-    const embedding = await createEmbedding();
-    console.log(embedding);
+    const documents = await createEmbedding();
+    const result = await insertDocument(documents);
+    console.log(result);
   };
 
   return (

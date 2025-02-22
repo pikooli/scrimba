@@ -1,11 +1,5 @@
 'use server';
 import OpenAI from 'openai';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_API_KEY
-);
 
 const openai = new OpenAI({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
@@ -33,8 +27,6 @@ export const createEmbedding = async () => {
       model,
       input: data,
     });
-    console.log('data', data);
-    console.log('response', response);
     const embeddings= response.data;
 
     const hash = data.map((item, idx) => {
@@ -48,13 +40,12 @@ export const createEmbedding = async () => {
     const documents = hash.map((item) => {
       return {
         content: item.text,
-        embedding: item.embedding,
+        embedding: item.embedding || [],
       };
     });
-    await supabase.from('documents').insert(documents);
-    return hash;
+    return documents;
   } catch (err) {
     console.error('error: ', err);
-    return 'Unable to access AI. Please refresh and try again' + err;
+    return [];
   }
 };
