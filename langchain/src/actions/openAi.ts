@@ -10,20 +10,18 @@ const model = 'text-embedding-ada-002';
 
 const DefaultMessages : ChatCompletionMessageParam[] = [{
   role: 'system',
-  content: `You are an enthusiastic podcast expert who loves recommending podcasts to people. 
-  You will be given two pieces of information - some context about podcasts episodes and a question. 
+  content: `You are an enthusiastic movies expert who loves recommending movies to people. 
+  You will be given two pieces of information - some context about movies and a question. 
   Your main job is to formulate a short answer to the question using the provided context. 
   If you are unsure and cannot find the answer in the context, say, "Sorry, I don't know the answer."
   Please do not make up the answer.` 
 },
-{
-  role: 'user',
-  content: 'What is the capital of France?',
-},
 ]
 
-export const getChatCompletion = async (text: string,question: string) => {
+export const getChatCompletion = async (text: string, question: string) => {
   'use server';
+  console.log("text",text)
+  console.log("question",question)
   const newMessages :ChatCompletionMessageParam[]= [...DefaultMessages, {
     role: 'user',
     content: `Context: ${text}\n\nQuestion: ${question}`

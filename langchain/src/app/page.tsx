@@ -3,20 +3,21 @@
 import { useEffect, useState } from "react"
 import { splitText } from "@/actions/langchain"
 import { Document } from "@langchain/core/documents"
-import { createEmbedding } from "@/actions/openAi"
+import { createEmbedding ,getChatCompletion} from "@/actions/openAi"
 import { insertDocument, searchDocument } from "@/actions/supabase"
 import { Database } from '@/types/supabase'
 
 export default function Home() {
   const [texts, setTexts] = useState<string>('')
   const [chunks, setChunks] = useState<Document[]>([])
-  const [search, setSearch] = useState<string>('')
+  const [search, setSearch] = useState<string>("Which movie can I take my child to?")
   const [results, setResults] = useState<Database['public']['Functions']['match_langchain_documents']['Returns']>([])
-
+  const [response, setResponse] = useState<string>('')
   useEffect(() => {
     fetch('/data.txt')
       .then(res => res.text())
       .then(data => setTexts(data))
+      .catch(err => console.error(err))
   }, [])  
 
   useEffect(() => {
@@ -24,21 +25,34 @@ export default function Home() {
       splitText(texts).then((chunks) => {
         setChunks(JSON.parse(chunks))
         console.log("chunks",JSON.parse(chunks))
-      })
+      }).catch(err => console.error(err))
     }
   }, [texts])
 
   const insertDocuments = async () => {
-    const embeddings = await createEmbedding(chunks.map((chunk) => chunk.pageContent))
-    console.log("embeddings",embeddings)
-    await insertDocument(embeddings)
+    try {
+      const embeddings = await createEmbedding(chunks.map((chunk) => chunk.pageContent))
+      console.log("embeddings",embeddings)
+      await insertDocument(embeddings)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   const searchDocuments = async () => {
-    const embeddings = await createEmbedding([search])
-    const results = await searchDocument(embeddings[0].embedding)
-    console.log("results",results)
-    setResults(results?.data || [])
+    try {
+      const embeddings = await createEmbedding([search])
+      const results = await searchDocument(embeddings[0].embedding)
+      console.log("results",results)
+      setResults(results.data || [])
+      if (results.data) {
+        const response = await getChatCompletion(results.data.map((result) => result.content).join('\n'), search)
+        console.log("response",response)
+        setResponse(response || '')
+      }
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   return (
@@ -47,8 +61,9 @@ export default function Home() {
       <button disabled className="bg-blue-500 text-white p-2 rounded-lg" onClick={insertDocuments}>Insert Documents ( already insered )</button>
     </div>
     <div>
-      <input type="text" className="border border-gray-200 p-2 rounded-lg" onChange={(e) => setSearch(e.target.value)} />
+      <input type="text" className="border border-gray-200 p-2 rounded-lg" onChange={(e) => setSearch(e.target.value)} value={search} />
       <button className="bg-blue-500 text-white p-2 rounded-lg" onClick={searchDocuments}>Search Documents</button>
+        <p className="text-sm text-gray-500 border border-gray-200 p-4 rounded-lg whitespace-pre-wrap"> response :{response}</p>
       <div className="border border-gray-200 p-4 rounded-lg ">  
         <label className="text-sm text-gray-500">Results</label>
         {results.map((result) => (
