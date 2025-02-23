@@ -17,6 +17,6 @@ export const searchDocument = async (query: number[]) => {
   return await supabase.rpc('match_langchain_documents', {
     query_embedding: query,
     match_threshold: 0.5,
-    match_count: 1
+    match_count: 4
   })
 };

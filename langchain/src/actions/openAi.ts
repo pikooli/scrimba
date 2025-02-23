@@ -13,22 +13,17 @@ const DefaultMessages : ChatCompletionMessageParam[] = [{
   content: `You are an enthusiastic movies expert who loves recommending movies to people. 
   You will be given two pieces of information - some context about movies and a question. 
   Your main job is to formulate a short answer to the question using the provided context. 
-  If you are unsure and cannot find the answer in the context, say, "Sorry, I don't know the answer."
+  If the answer is not given in the context, find the answer in the conversation history if possible. If you are unsure and cannot find the answer in the context, say, "Sorry, I don't know the answer." Please do not make up the answer.
   Please do not make up the answer.` 
 },
 ]
 
-export const getChatCompletion = async (text: string, question: string) => {
+export const getChatCompletion = async (messages: ChatCompletionMessageParam[]) => {
   'use server';
-  console.log("text",text)
-  console.log("question",question)
-  const newMessages :ChatCompletionMessageParam[]= [...DefaultMessages, {
-    role: 'user',
-    content: `Context: ${text}\n\nQuestion: ${question}`
-  }];
-
+  console.log("messages",messages)
+  const newMessages :ChatCompletionMessageParam[]= [...DefaultMessages, ...messages];
   const response = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
+    model: 'gpt-4',
     messages: newMessages,
     temperature: 0.5,
     frequency_penalty: 0.5,
