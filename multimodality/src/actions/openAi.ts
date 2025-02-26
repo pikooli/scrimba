@@ -2,7 +2,7 @@
 import OpenAI from 'openai';
 import fs from 'fs';
 import path from 'path';
-
+ 
 const openai = new OpenAI({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
 });
@@ -23,19 +23,24 @@ export const generateImage = async (
 
 
 
-export const analyseImage = async (prompt: string, imgURL: string) => {
-  console.log('prompt',prompt)
+export const analyseImage = async (prompt: string, imgURLs: string[]) => {
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
       {
         role: "user",
         content: [
-          { type: "text", text: prompt },
+          { type: "text", text: "I found this small egg on the ground in South Florida during spring. What type of bird could it be from?" },
           {
             type: "image_url",
             image_url: {
-              url: imgURL
+              url: imgURLs[0]
+            }
+          },
+          {
+            type: "image_url",
+            image_url: {
+              url: imgURLs[1]
             }
           }
         ]

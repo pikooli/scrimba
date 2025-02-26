@@ -4,7 +4,9 @@ import { generateImage, analyseImage } from '@/actions/openAi';
 import { useState } from 'react';
 import Image from 'next/image';
 
-const imgURL = "https://scrimba.com/links/egg-image";
+// const imgURL = "https://scrimba.com/links/egg-image";
+const imgURL2 = "https://scrimba.com/links/cheese-1-img";
+const imgURL3 = "https://scrimba.com/links/cheese-2-img";
 
 export default function Home() {
   const [prompt, setPrompt] = useState('');
@@ -21,7 +23,7 @@ export default function Home() {
   };
   const handleAnalyseImage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await analyseImage(analysePrompt, imgURL);
+    const response = await analyseImage(analysePrompt, [imgURL2, imgURL3]);
     console.log('response', response);
     if (response) {
       setAnalyseResponse(response);
