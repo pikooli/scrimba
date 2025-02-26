@@ -20,3 +20,28 @@ export const generateImage = async (
   console.log('response',response)
   return `data:image/png;base64,${response.data[0].b64_json}`;
 };
+
+
+
+export const analyseImage = async (prompt: string, imgURL: string) => {
+  console.log('prompt',prompt)
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "text", text: prompt },
+          {
+            type: "image_url",
+            image_url: {
+              url: imgURL
+            }
+          }
+        ]
+      }
+    ]
+  });
+  console.log('response',response)
+  return response.choices[0].message.content;
+} 
